@@ -1,15 +1,17 @@
 import React from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, Button, KeyboardAvoidingView } from 'react-native';
+import { StyleSheet, Text, View, Animated, Dimensions, Keyboard, UIManager, TextInput, TouchableOpacity, ScrollView, Button, KeyboardAvoidingView } from 'react-native';
 import Note from './Note';
 // import {Dimensions} from 'react-native';
 
 // var {height, width} = Dimensions.get('window');
+const { State: TextInputState } = TextInput;
 export default class Main extends React.Component {
     constructor(props){
         super(props);
         this.state = {
             noteArray:[],
             noteText:'',
+            shift: new Animated.Value(0),
         }
     }
   addNote = () => {
@@ -41,11 +43,22 @@ export default class Main extends React.Component {
     // alert(JSON.stringify(this.state.noteArray))
   }
 
+  
+  componentWillMount() {
+    this.keyboardDidShowSub = Keyboard.addListener('keyboardDidShow', this.handleKeyboardDidShow);
+    this.keyboardDidHideSub = Keyboard.addListener('keyboardDidHide', this.handleKeyboardDidHide);
+  }
+
+  componentWillUnmount() {
+    this.keyboardDidShowSub.remove();
+    this.keyboardDidHideSub.remove();
+  }
 
   render() {
       let notes = this.state.noteArray.map((val, key) => {
           return <Note key={key} keyVal={key} val={val} onDel={()=>this.deleteNote(key)} onCom={()=>this.onComplete(key)} />
       });
+      const { shift } = this.state;
     return (
       <View style={styles.container}>
 
@@ -57,9 +70,9 @@ export default class Main extends React.Component {
         <ScrollView style={styles.scrollContainer}>
             {notes}     
         </ScrollView>
-
-        <View style={styles.footer}>
-        <TextInput
+        <Animated.View style={[styles.footer, { transform: [{translateY: shift}] }]}>
+        
+            <TextInput
                 style={styles.textInput}
                 onChangeText={(noteText) => this.setState({noteText})}
                 value={this.state.noteText}
@@ -70,21 +83,56 @@ export default class Main extends React.Component {
                 maxLength = {40}
             >
             </TextInput>
-            
-        </View>
-
-        <TouchableOpacity onPress={this.addNote} style={styles.addButton} >
+            <TouchableOpacity onPress={this.addNote} style={styles.addButton} >
            
             <Text style={styles.addButtonText}>
                 Add
             </Text>
                
-        </TouchableOpacity>
+            </TouchableOpacity>
+            
+        </Animated.View>
 
       </View>
     );
   }
+  handleKeyboardDidShow = (event) => {
+    const { height: windowHeight } = Dimensions.get('window');
+    const keyboardHeight = event.endCoordinates.height;
+    const currentlyFocusedField = TextInputState.currentlyFocusedField();
+    UIManager.measure(currentlyFocusedField, (originX, originY, width, height, pageX, pageY) => {
+      const fieldHeight = height;
+      const fieldTop = pageY;
+      const gap = (windowHeight - keyboardHeight) - (fieldTop + fieldHeight);
+      if (gap >= 0) {
+        return;
+      }
+      Animated.timing(
+        this.state.shift,
+        {
+          toValue: gap,
+          duration: 500,
+          useNativeDriver: true,
+        }
+      ).start();
+    });
+  }
+
+  handleKeyboardDidHide = () => {
+    Animated.timing(
+      this.state.shift,
+      {
+        toValue: 0,
+        duration: 500,
+        useNativeDriver: true,
+      }
+    ).start();
+  }
 }
+
+
+
+
 
 const styles = StyleSheet.create({
   container: {
