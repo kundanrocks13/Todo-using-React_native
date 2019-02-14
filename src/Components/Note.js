@@ -7,34 +7,28 @@ export default class Note extends React.Component {
         super(props);
         this.state = {
             value : 'none',
-            // st: this.props.keyVal,
-            // status:true,
         }
     }
-    // onComplete = () => {
-    //     //this.setState({value:'line-through'})
-    //     // this.setState({status:false})
-    //     // value='line-through';
-    //     alert(this.state.st)
-    //   }
 
   render() {
     return (
         <View key={this.props.keyVal} style={styles.note}>
-            <Text style={{ textDecorationLine: this.state.value }}>{this.props.val.note}</Text>
+            <Text style={this.props.val.status?{textDecorationLine:'line-through'}:null}>{this.props.val.note}</Text>
 
             <TouchableOpacity onPress={this.props.onDel} style={styles.noteDelete} >
                 <Text style={styles.noteDeleteText}>
                     D
                 </Text>
             </TouchableOpacity>
+            {console.log(this.props.val.status)}
             {
-                this.props.val.status &&  
-                <TouchableOpacity onPress={this.props.onCom} style={styles.noteActivate} >
+               
+                this.props.val.status?null: 
+                (<TouchableOpacity onPress={this.props.onCom} style={styles.noteActivate} >
                     <Text style={styles.noteDeleteText}>
                         C
                     </Text>
-                </TouchableOpacity>
+                </TouchableOpacity>)
             }
         </View>
     );
@@ -50,7 +44,7 @@ const styles = StyleSheet.create({
     borderBottomWidth:2,
     padding:17,
     paddingRight:100,
-    backgroundColor:'yellow'
+    // backgroundColor:'#FEF1CD'
 
   },
   noteText: {

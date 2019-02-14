@@ -1,43 +1,44 @@
 import React from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, Button } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, Button, KeyboardAvoidingView } from 'react-native';
 import Note from './Note';
+// import {Dimensions} from 'react-native';
 
+// var {height, width} = Dimensions.get('window');
 export default class Main extends React.Component {
     constructor(props){
         super(props);
         this.state = {
             noteArray:[],
             noteText:'',
-            strike: 'line-through',
-            status: true
         }
     }
-    
   addNote = () => {
       if(this.state.noteText)
       {
-          this.state.noteArray.push({
-              'note':this.state.noteText,
-              'status':this.state.status,
-          })
-          this.setState({noteArray:this.state.noteArray})
-          this.setState({noteText:''});
-      }
-  }
+        this.state.noteArray.push({
+            'note':this.state.noteText,
+            'status':false
+        })
 
+      }
+      this.setState({noteArray:this.state.noteArray})
+      this.setState({noteText:''})
+  }
+ 
   deleteNote = (key) => {
-      this.state.noteArray.splice(key, 1);
-      console.log(key)
-      this.setState({noteArray:this.state.noteArray});
+    this.state.noteArray.splice(key, 1);
+    this.setState({noteArray:this.state.noteArray})
   }
 
   onComplete = (key) => {
-      
-    this.state.noteArray.push({
-        'status':false,
-    })
+    this.state.noteArray[key].status = true
     this.setState({noteArray:this.state.noteArray})
-    alert(JSON.stringify(this.state.noteArray))
+    // alert(JSON.stringify(item))
+    // // this.state.noteArray.push({
+    // //     'status':false,
+    // // })
+    // this.setState({noteArray:this.state.noteArray})
+    // alert(JSON.stringify(this.state.noteArray))
   }
 
 
@@ -54,19 +55,22 @@ export default class Main extends React.Component {
         </View>
 
         <ScrollView style={styles.scrollContainer}>
-            {notes}
+            {notes}     
         </ScrollView>
 
         <View style={styles.footer}>
-            <TextInput
+        <TextInput
                 style={styles.textInput}
                 onChangeText={(noteText) => this.setState({noteText})}
                 value={this.state.noteText}
                 placeholder="Enter Task"
                 placeholderTextColor='blue'
                 underlineColorAndroid='transparent'
+                editable = {true}
+                maxLength = {40}
             >
             </TextInput>
+            
         </View>
 
         <TouchableOpacity onPress={this.addNote} style={styles.addButton} >
@@ -97,17 +101,15 @@ const styles = StyleSheet.create({
 
   },
   headerText: {
-      fontSize:18,
-      padding:17
+      fontSize:20,
+      padding:15
   },
   headerSmallText:{
-      //marginTop:20,
       fontSize:12
   },
   scrollContainer:{
       flex:1,
-      marginBottom:100,
-     // backgroundColor:'yellow'
+      marginBottom:60
   },
   footer:{
       position:'absolute',
@@ -115,32 +117,31 @@ const styles = StyleSheet.create({
       left:0,
       right:0,
       zIndex:10,
-      backgroundColor:'cyan'
+      backgroundColor:'#FEF1CD'
   },
   textInput:{
       alignSelf:'stretch',
       color:'green',
       padding:20,
-      backgroundColor:'red',
-      fontSize:15,
+      backgroundColor:'#E1E4E5',
+      fontSize:16,
       borderTopWidth:2,
       borderTopColor:'black'
   },
   addButton: {
       position:'absolute',
       zIndex:11,
-      right:20,
-      bottom: 90,
+      right:10,
+      bottom: 0,
       backgroundColor: 'blue',
-      width: 90,
-      height: 90,
+      width: 70,
+      height: 70,
       borderRadius: 50,
       alignItems:'center',
-      justifyContent:'center',
-      elevation: 8
+      justifyContent:'center'
   },
   addButtonText: {
-      color: 'green',
+      color: 'white',
       fontSize: 24
   }
 });
