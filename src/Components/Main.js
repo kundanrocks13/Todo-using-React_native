@@ -89,7 +89,7 @@ export default class Main extends React.Component {
                 Add
             </Text>
                
-            </TouchableOpacity>
+        </TouchableOpacity>
             
         </Animated.View>
 

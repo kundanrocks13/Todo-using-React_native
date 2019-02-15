@@ -13,7 +13,10 @@ export default class Note extends React.Component {
   render() {
     return (
         <View key={this.props.keyVal} style={styles.note}>
-            <Text style={this.props.val.status?{textDecorationLine:'line-through'}:null}>{this.props.val.note}</Text>
+        <View style={{flex:1, flexDirection:'row'}}>
+            <Text style={{color:'red', fontSize:18, flex:0.2}}>{this.props.keyVal+1}.</Text>
+            <Text style={[this.props.val.status?{textDecorationLine:'line-through'}:null,{flex:1.8,paddingTop:2}]}>{this.props.val.note}</Text>
+        </View>
 
             <TouchableOpacity onPress={this.props.onDel} style={styles.noteDelete} >
                 <Text style={styles.noteDeleteText}>
